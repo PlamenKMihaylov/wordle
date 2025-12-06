@@ -1,7 +1,8 @@
 import { LetterCell } from "./LetterCell";
+import { type Guess } from "../lib/evaluate";
 
 type Props = {
-    guesses: string[];
+    guesses: Guess[];
     currentGuess: string;
 };
 
@@ -13,11 +14,13 @@ export function Grid({ guesses, currentGuess }: Props) {
         <div className="grid">
             {Array(rows).fill(undefined).map((_, r) => {
                 if (r < guesses.length) {
-                    const guess = guesses[r];
+                    const { word, states} = guesses[r];
+
+                    const padded = word.padEnd(cols, " ")
                     return (
                         <div className="row" key={r}>
-                            {guess.split("").map((ch: string, i: number) => (
-                                <LetterCell key={i} letter={ch} />
+                            {padded.split("").map((ch: string, i: number) => (
+                                <LetterCell key={i} letter={ch} state={states[i]}/>
                             ))}
                         </div>
                     );
@@ -28,7 +31,7 @@ export function Grid({ guesses, currentGuess }: Props) {
                         <div className="row" key={r}>
                             {/*typed cells*/}
                             {currentGuess.split('').map((ch,i) => (
-                                <LetterCell key={i} letter={ch}/>
+                                <LetterCell key={i} letter={ch} state="empty"/>
                             ))}
                             {/*empty cells*/}
                             {Array(cols - currentGuess.length).fill(undefined).map((_, i) => (
@@ -41,7 +44,7 @@ export function Grid({ guesses, currentGuess }: Props) {
                 return (
                     <div className="row" key={r}>
                         {Array(cols).fill(undefined).map((_,c) => (
-                            <LetterCell key={c} />
+                            <LetterCell key={c} state="empty"/>
                         ))}
                     </div>
                 );

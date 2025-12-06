@@ -1,4 +1,4 @@
-type LetterState = "correct" | "absent" | "present" | "empty";
+import { type LetterState } from "../lib/evaluate";
 
 type Props = {
     letter?: string;

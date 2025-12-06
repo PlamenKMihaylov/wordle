@@ -1,29 +1,55 @@
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: sans-serif; 
+  color: #f8f8f8;
+  background-color: #121213;
 }
 
 .cell {
-  width: 50px;
-  height: 50px;
-  border: 2px solid #444;
+  width: 62px;
+  height: 62px;
+  border: 2px solid #262626;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 24px;
   text-transform: uppercase;
   font-weight: bold;
-  margin: 4px;
+  margin: 2px;
 }
 
 .grid {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 40px;
+  align-items: center;
+  gap: 2px;
+  margin-top: 100px;
 }
 
 .row {
   display: flex;
-  gap: 6px;
+  gap: 2px;
+}
+
+.cell[data-state="correct"] {
+  background-color: #538d4e;
+  border-color: #538d4e;
+  color: white;
+}
+
+.cell[data-state="present"] {
+  background-color: #b69f3a;
+  border-color: #b69f3a;
+  color: white;
+}
+
+.cell[data-state="absent"] {
+  background-color: #3a3a3c;
+  border-color: #3a3a3c;
+  color: white;
+}
+
+.cell[data-state="empty"] {
+  background-color: transparent;
+  border-color: #3a3a3c;
 }
