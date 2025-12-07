@@ -14,7 +14,7 @@ export function Key({ letter, state = "empty", special = false, onClick }: Props
       data-state={state}
       onClick={onClick}
     >
-      {letter === "backspace" ? "⌫" : letter}
+      {letter === "BACKSPACE" ? "⌫" : letter}
     </button>
   );
 }

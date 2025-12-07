@@ -8,9 +8,9 @@ type Props = {
 
 export function Keyboard({ onKey, keyboardState } : Props) {
     const rows = [
-    ["я","в","е","р","т","ъ","у","и","о","п","ш","щ"],
-    ["а","с","д","ф","г","х","й","к","л","ч"],
-    ["enter","з","ь","ц","ж","б","н","м","ю","backspace"],
+    ["Я","В","Е","Р","Т","Ъ","У","И","О","П","Ш","Щ"],
+    ["А","С","Д","Ф","Г","Х","Й","К","Л","Ч"],
+    ["ENTER","З","Ь","Ц","Ж","Б","Н","М","Ю","BACKSPACE"],
     ];
 
     return (
@@ -18,8 +18,7 @@ export function Keyboard({ onKey, keyboardState } : Props) {
             {rows.map((row, rowIndex) => (
                 <div className="keyboard-row" key={rowIndex}>
                     {row.map((key) => {
-                        const isSpecial = key === "enter" || key === "backspace";
-
+                        const isSpecial = key === "ENTER" || key === "BACKSPACE";
                         return (
                             <Key 
                                 key={key}

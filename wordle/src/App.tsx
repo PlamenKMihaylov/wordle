@@ -1,13 +1,51 @@
 import { useState, useEffect } from 'react';
 import { Grid } from './components/Grid';
 import { getRandomWord, isSolution, isWordInWordlist } from './lib/words';
-import { evaluateGame, type Guess } from './lib/evaluate';
+import { evaluateGame, type Guess, type LetterState } from './lib/evaluate';
 import './index.css';
+import { Keyboard } from './components/keyboard/keyboard';
+import { computeKeyboardState } from './lib/updateKeyboard';
 
 export default function App() {
   const [currentGuess, setCurrentGuess] = useState("");
   const [guesses, setGuesses] = useState<Guess[]>([]);
   const [solution, setSolution] = useState("");
+  const [keyboardState, setKeyboardState] = useState<Record<string, LetterState>>({})
+
+  function processKey(key: string) {
+    // LETTER
+    if (/^[А-Я]$/.test(key)) {
+      if (currentGuess.length < 5) {
+        setCurrentGuess(prev => prev + key);
+      }
+      return;
+    }
+
+    // BACKSPACE
+    if (key === "BACKSPACE" || key === "backspace") {
+      setCurrentGuess(prev => prev.slice(0, -1));
+      return;
+    }
+
+    // ENTER
+    if (key === "ENTER" || key === "enter") {
+      if (currentGuess.length !== 5) return;
+
+      if (!isWordInWordlist(currentGuess)) {
+        alert("Невалидна Дума.");
+        return;
+      }
+
+      const evaluation = evaluateGame(currentGuess, solution);
+
+      setGuesses(prev => [...prev, { word: currentGuess, states: evaluation }]);
+      setKeyboardState(prev => computeKeyboardState(prev, currentGuess, evaluation));
+
+      setCurrentGuess("");
+      return;
+    }
+  }
+
 
   useEffect(() => {
     const solution = getRandomWord();
@@ -20,35 +58,15 @@ export default function App() {
     function handleKeydown(e: KeyboardEvent) {
       const key = e.key;
 
-      // letter А-Я
       if (/^[а-яА-Я]$/.test(key)) {
-        if (currentGuess.length < 5) {
-          setCurrentGuess(prev => prev + key.toUpperCase());
-        }
-      }
-
-      if (key === "Backspace") {
-        setCurrentGuess(prev => prev.slice(0, -1));
-      }
-
-      if (key === "Enter") {
-        if (currentGuess.length === 5) {
-          if (!isWordInWordlist(currentGuess)) {
-            alert('Невалидна Дума.');
-            return;
-          }
-
-          const evaluation = evaluateGame(currentGuess, solution);
-
-          setGuesses(guesses => [...guesses, {
-            word: currentGuess,
-            states: evaluation
-          }]);
-
-          setCurrentGuess("");
-        }
+        processKey(key.toUpperCase());
+      } else if (key === "Backspace") {
+        processKey("backspace");
+      } else if (key === "Enter") {
+        processKey("enter");
       }
     }
+
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
@@ -56,6 +74,7 @@ export default function App() {
   return (
     <div>
       <Grid guesses={guesses} currentGuess={currentGuess} />
+      <Keyboard onKey={processKey} keyboardState={keyboardState} />
     </div>
   );
 }

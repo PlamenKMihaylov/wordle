@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: sans-serif; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
   color: #f8f8f8;
   background-color: #121213;
 }
@@ -52,4 +52,57 @@ body {
 .cell[data-state="empty"] {
   background-color: transparent;
   border-color: #3a3a3c;
+}
+
+.keyboard {
+  display: block;
+  margin: 20px auto;
+  width: fit-content;
+  margin-top: 100px;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+  gap: 6px;
+}
+
+.key {
+  width: 43px;
+  height: 58px;
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #f8f8f8;
+  background-color: #828384;
+  border: #828384;
+}
+
+.key.special {
+  width: 72px;
+}
+
+.key[data-state="correct"] {
+  background-color: #538d4e;
+  color: white;
+  border-color: #538d4e;
+}
+
+.key[data-state="present"] {
+  background-color: #b69f3a;
+  color: white;
+  border-color: #b69f3a;
+}
+
+.key[data-state="absent"] {
+  background-color: #3a3a3c;
+  color: white;
+  border-color: #3a3a3c;
+}
+
+.key[data-state="empty"] {
+  background-color: #828384;
+  border-color: #828384;
+  color: #f8f8f8;
 }
