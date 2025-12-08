@@ -3,7 +3,7 @@ import { Grid } from './components/Grid';
 import { getRandomWord, isSolution, isWordInWordlist } from './lib/words';
 import { evaluateGame, type Guess, type LetterState } from './lib/evaluate';
 import './index.css';
-import { Keyboard } from './components/keyboard/keyboard';
+import { Keyboard } from './components/keyboard/Keyboard';
 import { computeKeyboardState } from './lib/updateKeyboard';
 
 export default function App() {
