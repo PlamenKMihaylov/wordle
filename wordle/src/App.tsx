@@ -11,8 +11,10 @@ export default function App() {
   const [guesses, setGuesses] = useState<Guess[]>([]);
   const [solution, setSolution] = useState("");
   const [keyboardState, setKeyboardState] = useState<Record<string, LetterState>>({})
+  const [isGameWon, setIsGameWon] = useState(false);
 
   function processKey(key: string) {
+    if (isGameWon) return;
     // LETTER
     if (/^[А-Я]$/.test(key)) {
       if (currentGuess.length < 5) {
@@ -38,9 +40,18 @@ export default function App() {
 
       const evaluation = evaluateGame(currentGuess, solution);
 
+      if (isSolution(currentGuess, solution)) {
+        setGuesses(prev => [...prev, { word: currentGuess, states: evaluation }]);
+        setKeyboardState(prev => computeKeyboardState(prev, currentGuess, evaluation));
+
+        setIsGameWon(true);
+        alert("Поздравления! Позна думата!");
+        setCurrentGuess("");
+        return;
+      }
+
       setGuesses(prev => [...prev, { word: currentGuess, states: evaluation }]);
       setKeyboardState(prev => computeKeyboardState(prev, currentGuess, evaluation));
-
       setCurrentGuess("");
       return;
     }
