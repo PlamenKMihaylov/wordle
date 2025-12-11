@@ -12,7 +12,10 @@ export function Key({ letter, state = "empty", special = false, onClick }: Props
     <button
       className={`key ${special ? "special" : ""}`}
       data-state={state}
-      onClick={onClick}
+      onClick={(e) =>{
+        e.currentTarget.blur();
+        onClick();
+      }}
     >
       {letter === "BACKSPACE" ? "⌫" : letter}
     </button>

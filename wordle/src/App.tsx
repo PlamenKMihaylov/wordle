@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Grid } from './components/Grid';
 import { getRandomWord, isSolution, isWordInWordlist } from './lib/words';
 import { evaluateGame, type Guess, type LetterState } from './lib/evaluate';
+import { Alert } from './components/Alerts/alert';
 import './index.css';
 import { Keyboard } from './components/keyboard/Keyboard';
 import { computeKeyboardState } from './lib/updateKeyboard';
@@ -12,9 +13,11 @@ export default function App() {
   const [solution, setSolution] = useState("");
   const [keyboardState, setKeyboardState] = useState<Record<string, LetterState>>({})
   const [isGameWon, setIsGameWon] = useState(false);
+  const [isGameLost, setIsGameLost] = useState(false);
 
-  function processKey(key: string) {
-    if (isGameWon) return;
+  const processKey = useCallback((key: string) => {
+    if (isGameLost || isGameWon) return;
+
     // LETTER
     if (/^[А-Я]$/.test(key)) {
       if (currentGuess.length < 5) {
@@ -45,17 +48,23 @@ export default function App() {
         setKeyboardState(prev => computeKeyboardState(prev, currentGuess, evaluation));
 
         setIsGameWon(true);
-        alert("Поздравления! Позна думата!");
         setCurrentGuess("");
         return;
       }
 
-      setGuesses(prev => [...prev, { word: currentGuess, states: evaluation }]);
+      setGuesses(prev => {
+        const newGuesses = [...prev, { word: currentGuess, states: evaluation }];
+        if (newGuesses.length === 6) {
+          setIsGameLost(true);
+        }
+        return newGuesses;
+      });
+
       setKeyboardState(prev => computeKeyboardState(prev, currentGuess, evaluation));
       setCurrentGuess("");
-      return;
     }
-  }
+  }, [currentGuess, isGameLost, isGameWon, solution]);
+
 
 
   useEffect(() => {
@@ -78,12 +87,29 @@ export default function App() {
       }
     }
 
-
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [currentGuess]);
+  }, [processKey]);
+
   return (
     <div>
+      <Alert isOpen={isGameLost}>
+        Загуби! Думата беше: <strong>{solution}</strong>
+        <br />
+        Провери значението тук:{" "}
+        <a
+          href={`https://rechnik.chitanka.info/w/${solution}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#fff", textDecoration: "underline" }}
+        >
+          линк към речник
+        </a>
+      </Alert>
+      <Alert isOpen={isGameWon}>
+        Поздравления! Позна Думата!
+      </Alert>
+
       <Grid guesses={guesses} currentGuess={currentGuess} />
       <Keyboard onKey={processKey} keyboardState={keyboardState} />
     </div>
