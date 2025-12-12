@@ -121,3 +121,25 @@ body {
   margin-right: auto;
 }
 
+/* ----- FLIP ANIMATION ----- */
+.cell {
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.cell.flip {
+  transform: rotateX(90deg);
+}
+
+.cell.revealed {
+  transform: rotateX(0deg);
+}
+
+/* Optional smoother reveal */
+.cell[data-state="correct"],
+.cell[data-state="present"],
+.cell[data-state="absent"] {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+
