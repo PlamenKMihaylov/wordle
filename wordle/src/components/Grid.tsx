@@ -1,54 +1,99 @@
 import { LetterCell } from "./LetterCell";
 import { type Guess } from "../lib/evaluate";
+import { useState, useEffect } from "react";
 
 type Props = {
-    guesses: Guess[];
-    currentGuess: string;
+  guesses: Guess[];
+  currentGuess: string;
+  isShaking: boolean;
 };
 
-export function Grid({ guesses, currentGuess }: Props) {
-    const rows = 6;
-    const cols = 5;
+export function Grid({ guesses, currentGuess, isShaking }: Props) {
+  const rows = 6;
+  const cols = 5;
 
-    return (
-        <div className="grid">
-            {Array(rows).fill(undefined).map((_, r) => {
-                if (r < guesses.length) {
-                    const { word, states} = guesses[r];
+  // Track animation state per tile: "flip" | "reveal" | undefined
+  const [animState, setAnimState] = useState<Record<number, "flip" | "reveal">>({});
 
-                    const padded = word.padEnd(cols, " ")
-                    return (
-                        <div className="row" key={r}>
-                            {padded.split("").map((ch: string, i: number) => (
-                                <LetterCell key={i} letter={ch} state={states[i]}/>
-                            ))}
-                        </div>
-                    );
-                }
+  useEffect(() => {
+    if (guesses.length === 0) return;
 
-                if (r === guesses.length) {
-                    return (
-                        <div className="row" key={r}>
-                            {/*typed cells*/}
-                            {currentGuess.split('').map((ch,i) => (
-                                <LetterCell key={i} letter={ch} state="empty"/>
-                            ))}
-                            {/*empty cells*/}
-                            {Array(cols - currentGuess.length).fill(undefined).map((_, i) => (
-                                <LetterCell key={"e" + i}/>
-                            ))}
-                        </div>
-                    );
-                }
+    const rowIndex = guesses.length - 1; // last submitted row
+    const timeouts: number[] = [];
+
+    for (let i = 0; i < cols; i++) {
+      const flat = rowIndex * cols + i;
+
+      // Step 1 — Start flip (rotate up)
+      const t1 = window.setTimeout(() => {
+        setAnimState(prev => ({ ...prev, [flat]: "flip" }));
+      }, i * 450);
+
+      // Step 2 — Reveal (tile rotates down + show color)
+      const t2 = window.setTimeout(() => {
+        setAnimState(prev => ({ ...prev, [flat]: "reveal" }));
+      }, i * 450 + 150);
+
+      timeouts.push(t1, t2);
+    }
+
+    return () => timeouts.forEach(clearTimeout);
+  }, [guesses]);
+
+  return (
+    <div className="grid">
+      {Array.from({ length: rows }).map((_, r) => {
+        // Already submitted rows (with animation)
+        if (r < guesses.length) {
+          const { word, states } = guesses[r];
+          const padded = word.padEnd(cols, " ");
+
+          return (
+            <div className="row" key={r}>
+              {padded.split("").map((ch, i) => {
+                const flat = r * cols + i;
+                const phase = animState[flat]; // "flip" | "reveal" | undefined
+
+                const tileState =
+                  phase === "reveal" ? states[i] : "empty";
 
                 return (
-                    <div className="row" key={r}>
-                        {Array(cols).fill(undefined).map((_,c) => (
-                            <LetterCell key={c} state="empty"/>
-                        ))}
-                    </div>
+                  <LetterCell
+                    key={i}
+                    letter={ch}
+                    state={tileState}
+                    className={phase} // flip or reveal or undefined
+                  />
                 );
-            })}
-        </div>
-    );
+              })}
+            </div>
+          );
+        }
+
+        // Current typing row
+        if (r === guesses.length) {
+          return (
+            <div className={`row ${r === guesses.length && isShaking ? "shake" : ""}`} key={r}>
+              {currentGuess.split("").map((ch, i) => (
+                <LetterCell key={i} letter={ch} state="empty" />
+              ))}
+
+              {Array.from({ length: cols - currentGuess.length }).map((_, i) => (
+                <LetterCell key={"e" + i} state="empty" />
+              ))}
+            </div>
+          );
+        }
+
+        // Empty rows
+        return (
+          <div className="row" key={r}>
+            {Array.from({ length: cols }).map((_, c) => (
+              <LetterCell key={c} state="empty" />
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
 }

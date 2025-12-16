@@ -14,6 +14,8 @@ export default function App() {
   const [keyboardState, setKeyboardState] = useState<Record<string, LetterState>>({})
   const [isGameWon, setIsGameWon] = useState(false);
   const [isGameLost, setIsGameLost] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
+  const [isInvalidWord, setIsInvalidWord] = useState(false);
 
   const processKey = useCallback((key: string) => {
     if (isGameLost || isGameWon) return;
@@ -37,7 +39,10 @@ export default function App() {
       if (currentGuess.length !== 5) return;
 
       if (!isWordInWordlist(currentGuess)) {
-        alert("Невалидна Дума.");
+        setIsShaking(true);
+        setIsInvalidWord(true);
+        setTimeout(() => setIsShaking(false), 600);
+        setTimeout(() => setIsInvalidWord(false), 1500);
         return;
       }
 
@@ -65,8 +70,6 @@ export default function App() {
     }
   }, [currentGuess, isGameLost, isGameWon, solution]);
 
-
-
   useEffect(() => {
     const solution = getRandomWord();
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -93,12 +96,15 @@ export default function App() {
 
   return (
     <div>
+      <Alert isOpen={isInvalidWord}>
+        Невалидна Дума!
+      </Alert>
       <Alert isOpen={isGameLost}>
         Загуби! Думата беше: <strong>{solution}</strong>
         <br />
         Провери значението тук:{" "}
         <a
-          href={`https://rechnik.chitanka.info/w/${solution}`}
+          href={`https://rechnik.chitanka.info/w/${solution}`}  
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: "#fff", textDecoration: "underline" }}
@@ -110,7 +116,7 @@ export default function App() {
         Поздравления! Позна Думата!
       </Alert>
 
-      <Grid guesses={guesses} currentGuess={currentGuess} />
+      <Grid guesses={guesses} currentGuess={currentGuess} isShaking={isShaking}/>
       <Keyboard onKey={processKey} keyboardState={keyboardState} />
     </div>
   );

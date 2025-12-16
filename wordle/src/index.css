@@ -23,7 +23,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  margin-top: 100px;
+  margin-top: 120px;
 }
 
 .row {
@@ -58,7 +58,7 @@ body {
   display: block;
   margin: 20px auto;
   width: fit-content;
-  margin-top: 100px;
+  margin-top: 80px;
 }
 
 .keyboard-row {
@@ -108,6 +108,11 @@ body {
 }
 
 .alert {
+  position: fixed;
+  top: 30px;               /* distance from top */
+  left: 50%;               /* center horizontally */
+  transform: translateX(-50%);  /* adjust for element width */
+
   background-color: #b59f3b;
   color: #fff;
   padding: 12px 20px;
@@ -115,31 +120,87 @@ body {
   text-align: center;
   font-weight: bold;
   font-size: 18px;
-  margin-bottom: 20px;
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
+
+  z-index: 9999;           /* ensures it stays above grid */
 }
+
 
 /* ----- FLIP ANIMATION ----- */
+/* Base */
 .cell {
   transform-style: preserve-3d;
-  transition: transform 0.6s;
+  transition: transform 0.2s linear, background-color 0.5s ease, border-color 0.5s ease;
 }
 
+/* Flip phase */
 .cell.flip {
   transform: rotateX(90deg);
+  background-color: #121213 !important;
+  border-color: #121213 !important;
+  color: transparent !important;
 }
 
-.cell.revealed {
+/* Reveal phase */
+.cell.reveal {
   transform: rotateX(0deg);
 }
-
-/* Optional smoother reveal */
-.cell[data-state="correct"],
-.cell[data-state="present"],
-.cell[data-state="absent"] {
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+/* hide the front face while flipping */
+/* Wordle-style flip animation */
+.cell.flip {
+  animation: flip 0.14s linear;
+  transform-origin: center;
 }
 
+@keyframes flip {
+  0% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0); /* collapse vertically */
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
 
+/* after flip, apply the color */
+.cell.reveal[data-state="correct"] {
+  background-color: #538d4e;
+  border-color: #538d4e;
+  color: #fff;
+}
+
+.cell.reveal[data-state="present"] {
+  background-color: #b69f3a;
+  border-color: #b69f3a;
+  color: #fff;
+}
+
+.cell.reveal[data-state="absent"] {
+  background-color: #3a3a3c;
+  border-color: #3a3a3c;
+  color: #fff;
+}
+
+/* --- SHAKE ANIMATION --- */
+.shake {
+  animation: shake 0.6s ease;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translateX(-4px);
+  }
+
+  20%, 80% {
+    transform: translateX(6px);
+  }
+
+  30%, 50%, 70% {
+    transform: translateX(-6px);
+  }
+
+  40%, 60% {
+    transform: translateX(6px);
+  }
+}
