@@ -1,4 +1,10 @@
 # **Bulgarian Wordle Copy**
+<p align="center">
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="60" />
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" width="60" />
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vitejs/vitejs-original.svg" width="60" />
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg" width="60" />
+</p>
 
 This is a fully custom Bulgarian Wordle clone built with **React**, **TypeScript**, and **Vite**.
 The game includes a manually implemented grid, evaluation logic, on-screen keyboard, animations, and game flow, written entirely without external UI or animation libraries.
