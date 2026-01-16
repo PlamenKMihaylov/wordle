@@ -14,6 +14,7 @@ export default function Header({ setShowInfoModal }:HeaderProps ) {
                     <h1>Bulgarian Wordle 🇧🇬</h1>
                 </div>
                 <div className="header-right">
+                    <i className="material-icons" style={{ fontSize: "46px", margin: "6px" }}>refresh</i>
                     <i className="material-icons" style={{ fontSize: "46px", margin: "6px" }}>settings</i>
                 </div>
             </div>

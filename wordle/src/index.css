@@ -108,7 +108,8 @@ body {
 }
 
 .alert {
-  position: fixed;
+  position: relative;
+  max-width: 360px;
   top: 30px;               /* distance from top */
   left: 50%;               /* center horizontally */
   transform: translateX(-50%);  /* adjust for element width */
@@ -224,7 +225,7 @@ body {
 }
 
 .header-right {
-  justify-self: center;
+  justify-self: end;
 }
 
 .header hr {

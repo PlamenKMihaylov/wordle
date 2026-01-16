@@ -19,6 +19,7 @@ export default function App() {
   const [isShaking, setIsShaking] = useState(false);
   const [isInvalidWord, setIsInvalidWord] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [isEvaluating, setIsEvaluating] = useState(false);
 
   const processKey = useCallback((key: string) => {
     if (isGameLost || isGameWon) return;
@@ -40,6 +41,8 @@ export default function App() {
     // ENTER
     if (key === "ENTER" || key === "enter") {
       if (currentGuess.length !== 5) return;
+      if (isEvaluating) return;
+      setIsEvaluating(true);
 
       if (!isWordInWordlist(currentGuess)) {
         setIsShaking(true);
@@ -70,8 +73,10 @@ export default function App() {
 
       setKeyboardState(prev => computeKeyboardState(prev, currentGuess, evaluation));
       setCurrentGuess("");
+
+      setTimeout(() => setIsEvaluating(false), 2000 )
     }
-  }, [currentGuess, isGameLost, isGameWon, solution]);
+  }, [currentGuess, isGameLost, isGameWon, solution, isEvaluating]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
