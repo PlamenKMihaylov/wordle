@@ -204,3 +204,186 @@ body {
     transform: translateX(6px);
   }
 }
+
+
+/*Header css*/
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  max-width: 582px;
+  margin: 0 auto;
+}
+
+.header-left {
+  justify-self: start;
+}
+
+.header-center {
+  justify-self: center;
+}
+
+.header-right {
+  justify-self: center;
+}
+
+.header hr {
+  width: 100%;
+  margin: 0;
+  border: none;
+  border-top: 1px solid #d3d6da;
+}
+
+/*Info modal overlay*/
+/* =========================
+   OVERLAY
+   ========================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* =========================
+   MODAL
+   ========================= */
+.info-modal {
+  background: #ffffff;
+  color: #121213;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px 18px;
+  border-radius: 8px;
+  border-style: solid;
+  border-color: #bcbcbc;
+  border-width: 2px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  animation: modalIn 0.15s ease-out;
+}
+
+@keyframes modalIn {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =========================
+   TEXT
+   ========================= */
+.info-modal p {
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0 0 10px;
+}
+
+.info-modal b {
+  font-weight: 600;
+}
+
+.info-modal hr {
+  border: none;
+  border-top: 1px solid #d3d6da;
+  margin: 14px 0;
+}
+
+/* =========================
+   EXAMPLE GAME
+   ========================= */
+.example-game {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0 6px;
+}
+
+/* =========================
+   TILE (Wordle style)
+   ========================= */
+.tile {
+  width: 48px;
+  height: 48px;
+  perspective: 600px;
+}
+
+/* inner rotating wrapper */
+.tile-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.tile-inner.flip {
+  transform: rotateY(180deg);
+}
+
+/* faces */
+.tile-front,
+.tile-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  border: 2px solid #d3d6da;
+  backface-visibility: hidden;
+  user-select: none;
+}
+
+.tile-front {
+  background: #ffffff;
+  color: #121213;
+}
+
+.tile-back {
+  transform: rotateY(180deg);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+/* =========================
+   TILE STATES (Wordle colors)
+   ========================= */
+.tile-back.correct {
+  background: #6aaa64;
+}
+
+.tile-back.present {
+  background: #c9b458;
+}
+
+.tile-back.absent {
+  background: #787c7e;
+}
+
+/* =========================
+   SMALL SCREENS
+   ========================= */
+@media (max-width: 480px) {
+  .info-modal {
+    max-width: 92%;
+    padding: 16px 14px;
+  }
+
+  .tile {
+    width: 44px;
+    height: 44px;
+  }
+
+  .tile-front,
+  .tile-back {
+    font-size: 22px;
+  }
+}
+

@@ -6,6 +6,8 @@ import { Alert } from './components/Alerts/alert';
 import './index.css';
 import { Keyboard } from './components/keyboard/Keyboard';
 import { computeKeyboardState } from './lib/updateKeyboard';
+import Header from './components/Header/Header';
+import InfoModal from './components/Modals/InfoModal';
 
 export default function App() {
   const [currentGuess, setCurrentGuess] = useState("");
@@ -16,6 +18,7 @@ export default function App() {
   const [isGameLost, setIsGameLost] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [isInvalidWord, setIsInvalidWord] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   const processKey = useCallback((key: string) => {
     if (isGameLost || isGameWon) return;
@@ -42,7 +45,7 @@ export default function App() {
         setIsShaking(true);
         setIsInvalidWord(true);
         setTimeout(() => setIsShaking(false), 600);
-        setTimeout(() => setIsInvalidWord(false), 1500);
+        setTimeout(() => setIsInvalidWord(false), 2000);
         return;
       }
 
@@ -71,6 +74,16 @@ export default function App() {
   }, [currentGuess, isGameLost, isGameWon, solution]);
 
   useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showInfoModal) {
+        setShowInfoModal(false);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [setShowInfoModal, showInfoModal]);
+
+  useEffect(() => {
     const solution = getRandomWord();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSolution(solution);
@@ -96,6 +109,21 @@ export default function App() {
 
   return (
     <div>
+      <Header setShowInfoModal={setShowInfoModal} />
+      {showInfoModal && (
+        <div
+          className="overlay"
+          onClick={() => setShowInfoModal(false)}
+        >
+          <div
+            className="info-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <InfoModal isOpen={showInfoModal}/>
+          </div>
+        </div>
+      )}
+
       <Alert isOpen={isInvalidWord}>
         Невалидна Дума!
       </Alert>
@@ -104,7 +132,7 @@ export default function App() {
         <br />
         Провери значението тук:{" "}
         <a
-          href={`https://rechnik.chitanka.info/w/${solution}`}  
+          href={`https://rechnik.chitanka.info/w/${solution}`}
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: "#fff", textDecoration: "underline" }}
@@ -116,7 +144,7 @@ export default function App() {
         Поздравления! Позна Думата!
       </Alert>
 
-      <Grid guesses={guesses} currentGuess={currentGuess} isShaking={isShaking}/>
+      <Grid guesses={guesses} currentGuess={currentGuess} isShaking={isShaking} />
       <Keyboard onKey={processKey} keyboardState={keyboardState} />
     </div>
   );
