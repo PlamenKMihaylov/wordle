@@ -6,14 +6,21 @@ type Props = {
   guesses: Guess[];
   currentGuess: string;
   isShaking: boolean;
+  gameId: number;
 };
 
-export function Grid({ guesses, currentGuess, isShaking }: Props) {
+export function Grid({ guesses, currentGuess, isShaking, gameId }: Props) {
   const rows = 6;
   const cols = 5;
 
   // Track animation state per tile: "flip" | "reveal" | undefined
   const [animState, setAnimState] = useState<Record<number, "flip" | "reveal">>({});
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAnimState({});
+  }, [gameId]);
+
 
   useEffect(() => {
     if (guesses.length === 0) return;

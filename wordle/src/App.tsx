@@ -7,19 +7,30 @@ import './index.css';
 import { Keyboard } from './components/keyboard/Keyboard';
 import { computeKeyboardState } from './lib/updateKeyboard';
 import Header from './components/Header/Header';
-import InfoModal from './components/Modals/InfoModal';
 
 export default function App() {
   const [currentGuess, setCurrentGuess] = useState("");
   const [guesses, setGuesses] = useState<Guess[]>([]);
   const [solution, setSolution] = useState("");
-  const [keyboardState, setKeyboardState] = useState<Record<string, LetterState>>({})
+  const [keyboardState, setKeyboardState] = useState<Record<string, LetterState>>({});
   const [isGameWon, setIsGameWon] = useState(false);
   const [isGameLost, setIsGameLost] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [isInvalidWord, setIsInvalidWord] = useState(false);
-  const [showInfoModal, setShowInfoModal] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [gameId, setGameId] = useState(0);
+
+  const resetGame = () => {
+    setCurrentGuess("");
+    setGuesses([]);
+    setKeyboardState({});
+    setIsGameWon(false);
+    setIsGameLost(false);
+    setIsShaking(false);
+    setIsInvalidWord(false);
+    setIsEvaluating(false);
+    setGameId(id => id + 1);
+  };
 
   const processKey = useCallback((key: string) => {
     if (isGameLost || isGameWon) return;
@@ -48,7 +59,10 @@ export default function App() {
         setIsShaking(true);
         setIsInvalidWord(true);
         setTimeout(() => setIsShaking(false), 600);
-        setTimeout(() => setIsInvalidWord(false), 2000);
+        setTimeout(() => {
+          setIsInvalidWord(false)
+          setIsEvaluating(false)
+        }, 2000);
         return;
       }
 
@@ -74,26 +88,16 @@ export default function App() {
       setKeyboardState(prev => computeKeyboardState(prev, currentGuess, evaluation));
       setCurrentGuess("");
 
-      setTimeout(() => setIsEvaluating(false), 2000 )
+      setTimeout(() => setIsEvaluating(false), 2000);
     }
   }, [currentGuess, isGameLost, isGameWon, solution, isEvaluating]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && showInfoModal) {
-        setShowInfoModal(false);
-      }
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [setShowInfoModal, showInfoModal]);
 
   useEffect(() => {
     const solution = getRandomWord();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSolution(solution);
     console.log("Solution for this session is " + solution);
-  }, []);
+  }, [gameId]);
 
   useEffect(() => {
     function handleKeydown(e: KeyboardEvent) {
@@ -114,21 +118,7 @@ export default function App() {
 
   return (
     <div>
-      <Header setShowInfoModal={setShowInfoModal} />
-      {showInfoModal && (
-        <div
-          className="overlay"
-          onClick={() => setShowInfoModal(false)}
-        >
-          <div
-            className="info-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <InfoModal isOpen={showInfoModal}/>
-          </div>
-        </div>
-      )}
-
+      <Header setGuesses={setGuesses} setSolution={setSolution} setKeyboardState={setKeyboardState} resetGame={resetGame} />
       <Alert isOpen={isInvalidWord}>
         Невалидна Дума!
       </Alert>
@@ -147,9 +137,13 @@ export default function App() {
       </Alert>
       <Alert isOpen={isGameWon}>
         Поздравления! Позна Думата!
+        <button className='new-game-btn' onClick={() => resetGame()}>
+          Започни Нова Игра
+        </button>
+
       </Alert>
 
-      <Grid guesses={guesses} currentGuess={currentGuess} isShaking={isShaking} />
+      <Grid guesses={guesses} currentGuess={currentGuess} isShaking={isShaking} gameId={gameId} />
       <Keyboard onKey={processKey} keyboardState={keyboardState} />
     </div>
   );
